@@ -94,11 +94,7 @@ namespace IRSystemDataServer.Controllers
                 Logger.LogError("query Machinery error", ex);
             }
 
-
-            var t =  Microsoft.Extensions.Configuration.ConfigurationBuilder().
-            return Json(resp);
-
-                        
+            return Json(resp);                        
         }
 
     }

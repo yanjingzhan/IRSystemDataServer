@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using IRSystemDataServer.Helpers;
 using IRSystemDataServer.Model.Database;
 using IRSystemDataServer.Models;
+using System.Configuration;
 
 namespace IRSystemDataServer.Controllers
 {
@@ -16,6 +17,8 @@ namespace IRSystemDataServer.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> Add([FromBody] Machinery entity)
         {
+
+
             DataContext.Machinery.Add(entity);
             await DataContext.SaveChangesAsync();
 
@@ -58,6 +61,9 @@ namespace IRSystemDataServer.Controllers
         [HttpGet]
         public async Task<IHttpActionResult> Delete([FromUri]int id)
         {
+            //System.Configuration.Configuration config = ConfigurationManager.(ConfigurationUserLevel.None);
+            var t = ConfigurationManager.GetSection("SystemSettings");
+
             var error = "";
             var query = from a in DataContext.Machinery
                         where a.Id == id
@@ -84,7 +90,7 @@ namespace IRSystemDataServer.Controllers
             {
                 var query = from a in DataContext.Machinery
                             where (!string.IsNullOrWhiteSpace(machineCode) || a.Machinecode == machineCode)
-                            
+
                             select a;
                 resp.Data = query;
             }
@@ -94,7 +100,7 @@ namespace IRSystemDataServer.Controllers
                 Logger.LogError("query Machinery error", ex);
             }
 
-            return Json(resp);                        
+            return Json(resp);
         }
 
     }

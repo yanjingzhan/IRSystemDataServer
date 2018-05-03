@@ -53,7 +53,34 @@ namespace IRSystemDataServer.Controllers
                 }
             }
             return null;
-
         }
+
+        /// <summary>
+        /// 验证密码，正确返回adminuser对象，错误返回null
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        [NonAction]
+        public IRSystemDataServer.Model.Database.AdminUser CheckUserPassword(string account,string password)
+        {
+            var query = from a in DataContext.AdminUser
+                        where a.Account == account
+                        select a;
+            var data = query.FirstOrDefault();
+            if (data != null)
+            {
+                var saltedPass = data.PasswordSalt + password;
+
+                if (saltedPass.Md5() == data.Password && data.IsDeleted != 1 && data.IsDisabled != 1)
+                {
+                    //Utils.CopyProperties(data, entity, new string[] { "password", "passwordsalt" });// keep pwd and salt secret
+                    // password correct
+                    return data;
+                }
+            }
+            return null;
+        }
+
+
     }
 }

@@ -14,11 +14,16 @@ namespace IRSystemDataServer.Controllers
 {
     public class MachineryController : BaseController
     {
+        private SystemSettings _systemSettings;
+
+        public MachineryController()
+        {
+            _systemSettings = (SystemSettings)ConfigurationManager.GetSection("SystemSettings");
+        }
+
         [HttpPost]
         public async Task<IHttpActionResult> Add([FromBody] Machinery entity)
         {
-
-
             DataContext.Machinery.Add(entity);
             await DataContext.SaveChangesAsync();
 
@@ -98,6 +103,28 @@ namespace IRSystemDataServer.Controllers
             {
                 resp.Message = ex.Message;
                 Logger.LogError("query Machinery error", ex);
+            }
+
+            return Json(resp);
+        }
+
+        [HttpGet]
+        public IHttpActionResult GetCameraConfigFile([FromUri] string machineCode)
+        {
+            var resp = new ResponseData<string>();
+            try
+            {
+                var query = from a in DataContext.Machinery
+                            where a.Machinecode == machineCode
+                            select a;
+                var data = query.FirstOrDefault();
+
+                resp.Message = data == null ? "camera not found." : "";
+                resp.Data = _systemSettings.CameraConfigBaseUrl + "/" + data.Machinefile;
+            }
+            catch (Exception ex)
+            {
+                resp.Message = ex.Message;
             }
 
             return Json(resp);

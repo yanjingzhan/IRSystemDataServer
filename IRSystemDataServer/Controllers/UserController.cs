@@ -29,12 +29,12 @@ namespace IRSystemDataServer.Controllers
         }
 
         [HttpGet]
-        public IHttpActionResult Query([FromUri]string name, string phone, string idcard)
+        public IHttpActionResult Query([FromUri]string name, string phone = "", string idcard = "")
         {
             var users = DataContext.User.Where(u => (string.IsNullOrEmpty(name) || u.Name.IndexOf(name) >= 0)
                     && (string.IsNullOrEmpty(phone) || u.Phone.StartsWith(phone))
                     && (string.IsNullOrEmpty(idcard) || u.IdCard == idcard)
-                    && u.IsDeleted == 0
+                    && (u.IsDeleted.HasValue || u.IsDeleted != 1)
             );
             var rd = new ResponseData<IEnumerable<User>>()
             {

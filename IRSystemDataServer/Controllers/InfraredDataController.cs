@@ -97,5 +97,28 @@ namespace IRSystemDataServer.Controllers
             }
             return Json(resp);
         }
+
+
+        [HttpGet]
+        public IHttpActionResult QueryByUserId([FromUri]long userid)
+        {
+            var resp = new ResponseData<IEnumerable<InfraredData>>();
+            try
+            {
+                var query = from a in DataContext.InfraredData
+                            where (userid == 0 || a.UserId == userid)                           
+                            select a;
+                resp.Data = query;
+
+
+                //Logger.Log("shitererer");
+            }
+            catch (Exception ex)
+            {
+                resp.Message = ex.Message;
+                Logger.LogError("query Infrared Datas error", ex);
+            }
+            return Json(resp);
+        }
     }
 }
